@@ -5,7 +5,7 @@ class Routes {
   static Map<String, Widget Function(BuildContext)> getRoutes(
       BuildContext context) {
     return {
-      '/': (context) => const HomeScreen(),
+      '': (context) => const HomeScreen(),
     };
   }
 }
