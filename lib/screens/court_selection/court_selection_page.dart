@@ -1,7 +1,9 @@
 import 'package:agenda_cancha_app/screens/court_selection/court_selection_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class CourtSelectionPage extends StatelessWidget {
   final ctrl = Get.put(CourtSelectionController());
@@ -38,7 +40,9 @@ class CourtSelectionPage extends StatelessWidget {
                   decoration:
                       const InputDecoration(labelText: 'Selecionar cancha'),
                   name: 'cancha',
-                  initialValue: 1,
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                  ]),
                   options: ctrl.canchas
                       .map((model) => FormBuilderFieldOption(
                             value: model.id,
@@ -50,15 +54,28 @@ class CourtSelectionPage extends StatelessWidget {
                 FormBuilderDateTimePicker(
                   name: 'fecha',
                   decoration: const InputDecoration(labelText: 'Fecha'),
-                  initialValue: DateTime.now(),
+                  format: DateFormat('dd-MM-yyyy'),
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                  ]),
+                  inputType: InputType.date,
+                  onChanged: ctrl.onChange,
                 ),
                 FormBuilderTextField(
                   name: 'nombre',
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.maxLength(50)
+                  ]),
                   decoration: const InputDecoration(labelText: 'Nombre'),
                   keyboardType: TextInputType.text,
                 ),
                 FormBuilderTextField(
                   name: 'apellido',
+                  validator: FormBuilderValidators.compose([
+                    FormBuilderValidators.required(),
+                    FormBuilderValidators.maxLength(50)
+                  ]),
                   decoration: const InputDecoration(labelText: 'Apellido'),
                   keyboardType: TextInputType.text,
                 ),

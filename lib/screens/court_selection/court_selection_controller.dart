@@ -12,33 +12,42 @@ class CourtSelectionController extends GetxController {
     Cancha(2, 'Cancha B'),
     Cancha(3, 'Cancha C'),
   ];
-
   var formKey = GlobalKey<FormBuilderState>();
   var homeCtrl = Get.find<HomeController>();
 
   Future<void> agendar() async {
     if (formKey.currentState != null) {
-      formKey.currentState?.save();
-      var modelMap = formKey.currentState!.value;
-      Agenda model = Agenda(
-        null,
-        modelMap['cancha'],
-        modelMap['fecha'].toString(),
-        modelMap['nombre'],
-        modelMap['apellido'],
-        '',
-      );
+      bool isValid = formKey.currentState?.saveAndValidate() ?? false;
+      if (isValid) {
+        var modelMap = formKey.currentState!.value;
+        Agenda model = Agenda(
+          null,
+          modelMap['cancha'],
+          modelMap['fecha'].toString(),
+          modelMap['nombre'],
+          modelMap['apellido'],
+          '',
+        );
 
-      bool valid = await validAgenda(model);
-      if (valid) {
-        await AgendaServices.insert(model);
-        await homeCtrl.getAgendas();
-        Get.back();
+        bool valid = await validAgenda(model);
+        if (valid) {
+          await AgendaServices.insert(model);
+          await homeCtrl.getAgendas();
+          Get.back();
+        } else {
+          Get.defaultDialog(
+            title: 'Solicitud de agenda',
+            middleText:
+                'La cancha selecionada no esta disponible para dicha fecha',
+            textConfirm: 'Ok',
+            confirmTextColor: Colors.white,
+            onConfirm: () => Get.back(),
+          );
+        }
       } else {
         Get.defaultDialog(
-          title: 'Solicitud de agenda',
-          middleText:
-              'La cancha selecionada no esta disponible para dicha fecha',
+          title: 'Informacion',
+          middleText: 'Hay campos incompletos',
           textConfirm: 'Ok',
           confirmTextColor: Colors.white,
           onConfirm: () => Get.back(),
@@ -46,6 +55,8 @@ class CourtSelectionController extends GetxController {
       }
     }
   }
+
+  void onChange(dynamic value) {}
 
   Future<bool> validAgenda(Agenda model) async {
     bool result = false;

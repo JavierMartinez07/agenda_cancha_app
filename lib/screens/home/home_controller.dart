@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:agenda_cancha_app/db_services/agenda_services.dart';
 import 'package:agenda_cancha_app/models/agenda.dart';
 import 'package:agenda_cancha_app/models/cancha.dart';
+import 'package:agenda_cancha_app/models/tiempo.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class HomeController extends GetxController {
   var agendas = <Agenda>[].obs;
+  Tiempo? tiempo;
 
   final canchas = <Cancha>[
     Cancha(1, 'Cancha A'),
@@ -18,6 +23,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     getAgendas();
+    getTiempo();
     super.onInit();
   }
 
@@ -39,6 +45,17 @@ class HomeController extends GetxController {
 
   String getNameCancha(int canchaId) =>
       canchas.where((x) => x.id == canchaId).first.nombre;
+
+  Future<Tiempo?> getTiempo() async {
+    const String url =
+        'https://api.weatherapi.com/v1/current.json?key=99c2621367f040a6ac7185824221112&q=Dominican Republic&lang=es';
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      tiempo = Tiempo.fromJson(json['current']);
+    }
+    return tiempo;
+  }
 
   Future<void> deleteAgenda(Agenda model) async {
     Get.defaultDialog(
